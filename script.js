@@ -20,51 +20,55 @@ function showSuccess(input) {
 
 // Check email is valid
 function checkEmail(input) {
-  const re =
-    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  if (re.test(input.value.trim())) {
-    showSuccess(input);
-  } else {
-    showError(input, "ایمیل معتبر نیست");
+  if (!checkRequired(input)) {
+    const re =
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (re.test(input.value.trim())) {
+      showSuccess(input);
+    } else {
+      showError(input, "ایمیل معتبر نیست");
+    }
   }
 }
 
 // Check required fields
-function checkRequired(inputArr) {
+function checkRequired(input) {
   let isRequired = false;
-  inputArr.forEach(function (input) {
-    if (input.value.trim() === "") {
-      showError(input, `${getFieldName(input)} اجباری است`);
-      isRequired = true;
-    } else {
-      showSuccess(input);
-    }
-  });
+  if (input.value.trim() === "") {
+    showError(input, `${getFieldName(input)} اجباری است`);
+    isRequired = true;
+  } else {
+    showSuccess(input);
+  }
 
   return isRequired;
 }
 
 // Check input length
 function checkLength(input, min, max) {
-  if (input.value.length < min) {
-    showError(
-      input,
-      `${getFieldName(input)} باید دست کم ${min} کاراکتر داشته باشد`
-    );
-  } else if (input.value.length > max) {
-    showError(
-      input,
-      `${getFieldName(input)} نباید بیشتر از ${max} کاراکتر داشته باشد`
-    );
-  } else {
-    showSuccess(input);
+  if (!checkRequired(input)) {
+    if (input.value.length < min) {
+      showError(
+        input,
+        `${getFieldName(input)} باید دست کم ${min} کاراکتر داشته باشد`
+      );
+    } else if (input.value.length > max) {
+      showError(
+        input,
+        `${getFieldName(input)} نباید بیشتر از ${max} کاراکتر داشته باشد`
+      );
+    } else {
+      showSuccess(input);
+    }
   }
 }
 
 // Check passwords match
 function checkPasswordsMatch(input1, input2) {
-  if (input1.value !== input2.value) {
-    showError(input2, "گذرواژه ها با هم همخوانی ندارد");
+  if (!checkRequired(input2)) {
+    if (input1.value !== input2.value) {
+      showError(input2, "گذرواژه ها با هم همخوانی ندارد");
+    }
   }
 }
 
@@ -77,10 +81,8 @@ function getFieldName(input) {
 form.addEventListener("submit", function (e) {
   e.preventDefault();
 
-  if (!checkRequired([username, email, password, password2])) {
-    checkLength(username, 3, 15);
-    checkLength(password, 6, 25);
-    checkEmail(email);
-    checkPasswordsMatch(password, password2);
-  }
+  checkLength(username, 3, 15);
+  checkLength(password, 6, 25);
+  checkEmail(email);
+  checkPasswordsMatch(password, password2);
 });
